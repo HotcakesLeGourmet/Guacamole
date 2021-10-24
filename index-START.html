@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Whack A Mole!</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>
+      Whack-a-mole! <span class="score">0</span><span class="score">00:00</span>
+    </h1>
+    <button onClick="startGame()">Start!</button>
+    <button onClick="stopGame()">Stop!</button>
+
+    <div class="game">
+      <div class="hole hole1">
+        <div class="mole"></div>
+      </div>
+      <div class="hole hole2">
+        <div class="mole"></div>
+      </div>
+      <div class="hole hole3">
+        <div class="mole"></div>
+      </div>
+      <div class="hole hole4">
+        <div class="mole"></div>
+      </div>
+      <div class="hole hole5">
+        <div class="mole"></div>
+      </div>
+      <div class="hole hole6">
+        <div class="mole"></div>
+      </div>
+    </div>
+
+    <script>
+      const holes = document.querySelectorAll(".hole");
+      const scoreBoard = document.querySelector(".score");
+      const moles = document.querySelectorAll(".mole");
+      let count = 0;
+      moles.forEach((mole) => {
+        const c_mole = mole;
+        mole.addEventListener("click", () => {
+          c_mole.parentNode.classList.remove("up");
+          count += 1;
+          updatecount(count);
+        });
+      });
+
+      let lastHole;
+      let timeUp = true;
+      let moles_m;
+
+      function randTime(min, max) {
+        return Math.round(Math.random() * (max - min) + min);
+      }
+      function updatecount(newvalue) {
+        count = newvalue;
+        scoreBoard.textContent = `${newvalue}`;
+      }
+      function randHole(holes) {
+        const idx = Math.floor(Math.random() * holes.length);
+        const hole = holes[idx];
+        if (hole === lastHole) {
+          return randHole(holes);
+        }
+        lastHole = hole;
+
+        return hole;
+      }
+
+      function peep() {
+        const pastHole = lastHole;
+        const time = randTime(1000, 1200);
+        const hole = randHole(holes);
+        hole.classList.add("up");
+        moles_m = setTimeout(() => {
+          console.log(hole);
+          hole.classList.remove("up");
+          if (!timeUp) peep();
+          return;
+        }, time);
+      }
+      let duration;
+      function startGame() {
+        clearTimeout(moles_m);
+        updatecount(0)
+        timeUp = false;
+        holes.forEach((hole) => hole.classList.remove("up"));
+        peep();
+        // const timer = new Date(60000);
+        // const minutes = timer.getMinutes();
+        // const seconds = timer.getSeconds();
+        duration = setTimeout(() => {
+          timeUp = true;
+          clearTimeout(moles_m);
+        }, 15000);
+      }
+      function stopGame() {
+        updatecount(0)
+        if (lastHole) lastHole.classList.remove("up");
+        clearTimeout(moles_m);
+        timeUp = true;
+      }
+    </script>
+  </body>
+</html>
